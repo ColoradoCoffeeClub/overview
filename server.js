@@ -1,55 +1,41 @@
 const express = require('express');
 
+const Product = require('./db.js');
+
 const app = express();
 const port = process.env.PORT || 8080;
 
 app.use(express.static('public'));
+app.use(express.urlencoded());
+app.use(express.json());
 //app.use('/products/:productId', express.static('public'));
 
 app.get('/products/list', (req, res) => {
   ///products/list?count=10&page=100
-  res.send([
-    {
-      "id": 1,
-      "name": "Camo Onesie",
-      "slogan": "Blend in to your crowd",
-      "description": "The So Fatigues will wake you up and fit you in. This high energy camo will have you blending in to even the wildest surroundings.",
-      "category": "Jackets",
-      "default_price": "140"
-    },
-    {
-      "id": 2,
-      "name": "Bright Future Sunglasses",
-      "slogan": "You've got to wear shades",
-      "description": "Where you're going you might not need roads, but you definitely need some shades. Give those baby blues a rest and let the future shine bright on these timeless lenses.",
-      "category": "Accessories",
-      "default_price": "69"
-    },
-    {
-      "id": 3,
-      "name": "Morning Joggers",
-      "slogan": "Make yourself a morning person",
-      "description": "Whether you're a morning person or not.  Whether you're gym bound or not.  Everyone looks good in joggers.",
-      "category": "Pants",
-      "default_price": "40"
-    },
-    {
-      "id": 4,
-      "name": "Slacker's Slacks",
-      "slogan": "Comfortable for everything, or nothing",
-      "description": "I'll tell you how great they are after I nap for a bit.",
-      "category": "Pants",
-      "default_price": "65"
-    },
-    {
-      "id": 5,
-      "name": "Heir Force Ones",
-      "slogan": "A sneaker dynasty",
-      "description": "Now where da boxes where I keep mine? You should peep mine, maybe once or twice but never three times. I'm just a sneaker pro, I love Pumas and shell toes, but can't nothin compare to a fresh crispy white pearl",
-      "category": "Kicks",
-      "default_price": "99"
+  console.log('req.query', req.query);
+  const count = parseInt(req.query.count) || 5;
+  const page = parseInt(req.query.page) || 1;
+  Product.find({}, (err, docs) => {
+    if (err) {
+      console.log('Err finding docs', err);
     }
-  ]);
+    const list = [];
+    const start = page === 1 ? 0 : (page * count - count);
+    const stop = start + count < docs.length ? start + count : docs.length;
+
+    for (let i = start; i < stop; i += 1) {
+      const respObj = {
+        id: docs[i].id,
+        name: docs[i].name,
+        slogan: docs[i].slogan,
+        description: docs[i].description,
+        category: docs[i].category,
+        default_price: docs[i].default_price,
+      };
+      list.push(respObj);
+    }
+    res.send(list);
+  });
 });
 
 app.get('/products/:product_id', (req, res) => {
@@ -320,6 +306,136 @@ app.get('/products/:product_id/related', (req, res) => {
     7
   ])
 });
+
+app.get('/createproduct', (req, res) => {
+  Product.create({
+    id: 3,
+    name: "test",
+    slogan: "test",
+    description: "test",
+    category: "test",
+    default_price: "test",
+    features: [
+      {
+        feature: "test",
+        value: "test",
+      },
+      {
+        feature: "test",
+        value: "test",
+      },
+      {
+        feature: "test",
+        value: "test",
+      },
+      {
+        feature: "test",
+        value: "test",
+      },
+    ],
+    results: [
+      {
+        style_id: 99,
+        name: "test",
+        original_price: "test",
+        sale_price: "test",
+        'default?': 5,
+        photos: [
+          {
+            thumbnail_url: "test",
+            url: "test",
+          },
+          {
+            thumbnail_url: "test",
+            url: "test",
+          },
+          {
+            thumbnail_url: "test",
+            url: "test",
+          },
+          {
+            thumbnail_url: "test",
+            url: "test",
+          },
+        ],
+        skus: {
+          'S': 1,
+          'M': 2,
+          'L': 3,
+        }
+      },
+      {
+        style_id: 99,
+        name: "test",
+        original_price: "test",
+        sale_price: "test",
+        'default?': 5,
+        photos: [
+          {
+            thumbnail_url: "test",
+            url: "test",
+          },
+          {
+            thumbnail_url: "test",
+            url: "test",
+          },
+          {
+            thumbnail_url: "test",
+            url: "test",
+          },
+          {
+            thumbnail_url: "test",
+            url: "test",
+          },
+        ],
+        skus: {
+          'S': 1,
+          'M': 2,
+          'L': 3,
+        }
+      },
+      {
+        style_id: 99,
+        name: "test",
+        original_price: "test",
+        sale_price: "test",
+        'default?': 5,
+        photos: [
+          {
+            thumbnail_url: "test",
+            url: "test",
+          },
+          {
+            thumbnail_url: "test",
+            url: "test",
+          },
+          {
+            thumbnail_url: "test",
+            url: "test",
+          },
+          {
+            thumbnail_url: "test",
+            url: "test",
+          },
+        ],
+        skus: {
+          'S': 1,
+          'M': 2,
+          'L': 3,
+        }
+      },
+    ],
+    related: [2, 4, 6, 8],
+  },
+    (err, resp) => {
+      if (err) {
+        console.log('err creating product in db');
+      } else {
+        res.send('created product');
+      }
+    })
+})
+
 
 app.listen(port, () => {
   console.log(`server is listening on port ${port}`);
