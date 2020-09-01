@@ -1,6 +1,6 @@
 const express = require('express');
 
-const Product = require('./db.js');
+const Product = require('./db/db.js');
 
 const app = express();
 const port = process.env.PORT || 8080;
