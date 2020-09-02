@@ -6,36 +6,45 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 app.use(express.static('public'));
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 //app.use('/products/:productId', express.static('public'));
 
 app.get('/products/list', (req, res) => {
   ///products/list?count=10&page=100
-  console.log('req.query', req.query);
   const count = parseInt(req.query.count) || 5;
   const page = parseInt(req.query.page) || 1;
-  Product.find({}, (err, docs) => {
-    if (err) {
-      console.log('Err finding docs', err);
-    }
-    const list = [];
-    const start = page === 1 ? 0 : (page * count - count);
-    const stop = start + count < docs.length ? start + count : docs.length;
 
-    for (let i = start; i < stop; i += 1) {
-      const respObj = {
-        id: docs[i].id,
-        name: docs[i].name,
-        slogan: docs[i].slogan,
-        description: docs[i].description,
-        category: docs[i].category,
-        default_price: docs[i].default_price,
-      };
-      list.push(respObj);
-    }
-    res.send(list);
-  });
+  const start = page === 1 ? 0 : (page * count - count);
+  const stop = start + count; // < docs.length ? start + count : docs.length;
+  const list = [];
+
+  for (let i = start; i <= stop; i += 1) {
+    list.push(i);
+  }
+  const startTime = Date.now();
+  Product.find({
+    id: { $in: list }
+  },
+    (err, docs) => {
+      if (err) {
+        console.log('err finding docs', err);
+      }
+      const products = [];
+      docs.forEach((i) => {
+        const respObj = {
+          id: i.id,
+          name: i.name,
+          slogan: i.slogan,
+          description: i.description,
+          category: i.category,
+          default_price: i.default_price,
+        };
+        products.push(respObj);
+      });
+      console.log(`Total elapsed query time: ${(Date.now() - startTime) / 1000}s`);
+      res.send(products);
+    });
 });
 
 app.get('/products/:product_id', (req, res) => {
