@@ -10,46 +10,75 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 //app.use('/products/:productId', express.static('public'));
 
+let countProduct;
+const getCount = async () => {
+  countProduct = await Product.countDocuments();
+  //console.log(count);
+};
+
 app.get('/products/list', (req, res) => {
-  ///products/list?count=10&page=100
   const count = parseInt(req.query.count) || 5;
   const page = parseInt(req.query.page) || 1;
 
-  const start = page === 1 ? 0 : (page * count - count);
-  const stop = start + count; // < docs.length ? start + count : docs.length;
-  const list = [];
+  getCount()
+    .then(() => {
+      const start = page === 1 ? 0 : (page * count - count);
+      const stop = start + count < countProduct ? start + count : countProduct;
+      const list = [];
 
-  for (let i = start; i <= stop; i += 1) {
-    list.push(i);
-  }
-  const startTime = Date.now();
-  Product.find({
-    id: { $in: list }
-  },
-    (err, docs) => {
-      if (err) {
-        console.log('err finding docs', err);
+      for (let i = start; i <= stop; i += 1) {
+        list.push(i);
       }
-      const products = [];
-      docs.forEach((i) => {
-        const respObj = {
-          id: i.id,
-          name: i.name,
-          slogan: i.slogan,
-          description: i.description,
-          category: i.category,
-          default_price: i.default_price,
-        };
-        products.push(respObj);
-      });
-      console.log(`Total elapsed query time: ${(Date.now() - startTime) / 1000}s`);
-      res.send(products);
+      const startTime = Date.now();
+      Product.find({
+        id: { $in: list }
+      },
+        (err, docs) => {
+          if (err) {
+            console.log('err finding docs', err);
+          }
+          const products = [];
+          docs.forEach((i) => {
+            const respObj = {
+              id: i.id,
+              name: i.name,
+              slogan: i.slogan,
+              description: i.description,
+              category: i.category,
+              default_price: i.default_price,
+            };
+            products.push(respObj);
+          });
+          console.log(`Total elapsed query time: ${(Date.now() - startTime) / 1000}s`);
+          res.send(products);
+        });
     });
 });
 
 app.get('/products/:product_id', (req, res) => {
-  //res.send(`id is ${req.params.product_id}`);
-  res.send({ "id": 1, "name": "Camo Onesie", "slogan": "Blend in to your crowd", "description": "The So Fatigues will wake you up and fit you in. This high energy camo will have you blending in to even the wildest surroundings.", "category": "Jackets", "default_price": "140", "features": [{ "feature": "Buttons", "value": "Brass" }] });
+  const id = req.params.product_id;
+  getCount()
+    .then(() => {
+      if (id < 1 || id > countProduct) {
+        res.status(404).send(`Invalid request`);
+      } else {
+        Product.find({ id }, (err, doc) => {
+          if (err) {
+            console.log('err getting product', err);
+          }
+          const resObj = {
+            id: parseInt(id),
+            name: doc[0].name,
+            slogan: doc[0].slogan,
+            description: doc[0].description,
+            category: doc[0].category,
+            default_price: doc[0].default_price,
+            features: doc[0].features
+          };
+          res.send(resObj);
+        });
+      }
+    });
 });
 
 app.get('/products/:product_id/styles', (req, res) => {
@@ -316,134 +345,134 @@ app.get('/products/:product_id/related', (req, res) => {
   ])
 });
 
-app.get('/createproduct', (req, res) => {
-  Product.create({
-    id: 3,
-    name: "test",
-    slogan: "test",
-    description: "test",
-    category: "test",
-    default_price: "test",
-    features: [
-      {
-        feature: "test",
-        value: "test",
-      },
-      {
-        feature: "test",
-        value: "test",
-      },
-      {
-        feature: "test",
-        value: "test",
-      },
-      {
-        feature: "test",
-        value: "test",
-      },
-    ],
-    results: [
-      {
-        style_id: 99,
-        name: "test",
-        original_price: "test",
-        sale_price: "test",
-        'default?': 5,
-        photos: [
-          {
-            thumbnail_url: "test",
-            url: "test",
-          },
-          {
-            thumbnail_url: "test",
-            url: "test",
-          },
-          {
-            thumbnail_url: "test",
-            url: "test",
-          },
-          {
-            thumbnail_url: "test",
-            url: "test",
-          },
-        ],
-        skus: {
-          'S': 1,
-          'M': 2,
-          'L': 3,
-        }
-      },
-      {
-        style_id: 99,
-        name: "test",
-        original_price: "test",
-        sale_price: "test",
-        'default?': 5,
-        photos: [
-          {
-            thumbnail_url: "test",
-            url: "test",
-          },
-          {
-            thumbnail_url: "test",
-            url: "test",
-          },
-          {
-            thumbnail_url: "test",
-            url: "test",
-          },
-          {
-            thumbnail_url: "test",
-            url: "test",
-          },
-        ],
-        skus: {
-          'S': 1,
-          'M': 2,
-          'L': 3,
-        }
-      },
-      {
-        style_id: 99,
-        name: "test",
-        original_price: "test",
-        sale_price: "test",
-        'default?': 5,
-        photos: [
-          {
-            thumbnail_url: "test",
-            url: "test",
-          },
-          {
-            thumbnail_url: "test",
-            url: "test",
-          },
-          {
-            thumbnail_url: "test",
-            url: "test",
-          },
-          {
-            thumbnail_url: "test",
-            url: "test",
-          },
-        ],
-        skus: {
-          'S': 1,
-          'M': 2,
-          'L': 3,
-        }
-      },
-    ],
-    related: [2, 4, 6, 8],
-  },
-    (err, resp) => {
-      if (err) {
-        console.log('err creating product in db');
-      } else {
-        res.send('created product');
-      }
-    })
-})
+// app.get('/createproduct', (req, res) => {
+//   Product.create({
+//     id: 3,
+//     name: "test",
+//     slogan: "test",
+//     description: "test",
+//     category: "test",
+//     default_price: "test",
+//     features: [
+//       {
+//         feature: "test",
+//         value: "test",
+//       },
+//       {
+//         feature: "test",
+//         value: "test",
+//       },
+//       {
+//         feature: "test",
+//         value: "test",
+//       },
+//       {
+//         feature: "test",
+//         value: "test",
+//       },
+//     ],
+//     results: [
+//       {
+//         style_id: 99,
+//         name: "test",
+//         original_price: "test",
+//         sale_price: "test",
+//         'default?': 5,
+//         photos: [
+//           {
+//             thumbnail_url: "test",
+//             url: "test",
+//           },
+//           {
+//             thumbnail_url: "test",
+//             url: "test",
+//           },
+//           {
+//             thumbnail_url: "test",
+//             url: "test",
+//           },
+//           {
+//             thumbnail_url: "test",
+//             url: "test",
+//           },
+//         ],
+//         skus: {
+//           'S': 1,
+//           'M': 2,
+//           'L': 3,
+//         }
+//       },
+//       {
+//         style_id: 99,
+//         name: "test",
+//         original_price: "test",
+//         sale_price: "test",
+//         'default?': 5,
+//         photos: [
+//           {
+//             thumbnail_url: "test",
+//             url: "test",
+//           },
+//           {
+//             thumbnail_url: "test",
+//             url: "test",
+//           },
+//           {
+//             thumbnail_url: "test",
+//             url: "test",
+//           },
+//           {
+//             thumbnail_url: "test",
+//             url: "test",
+//           },
+//         ],
+//         skus: {
+//           'S': 1,
+//           'M': 2,
+//           'L': 3,
+//         }
+//       },
+//       {
+//         style_id: 99,
+//         name: "test",
+//         original_price: "test",
+//         sale_price: "test",
+//         'default?': 5,
+//         photos: [
+//           {
+//             thumbnail_url: "test",
+//             url: "test",
+//           },
+//           {
+//             thumbnail_url: "test",
+//             url: "test",
+//           },
+//           {
+//             thumbnail_url: "test",
+//             url: "test",
+//           },
+//           {
+//             thumbnail_url: "test",
+//             url: "test",
+//           },
+//         ],
+//         skus: {
+//           'S': 1,
+//           'M': 2,
+//           'L': 3,
+//         }
+//       },
+//     ],
+//     related: [2, 4, 6, 8],
+//   },
+//     (err, resp) => {
+//       if (err) {
+//         console.log('err creating product in db');
+//       } else {
+//         res.send('created product');
+//       }
+//     })
+// })
 
 
 app.listen(port, () => {
