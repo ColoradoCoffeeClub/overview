@@ -62,6 +62,7 @@ app.get('/products/:product_id', (req, res) => {
       if (id < 1 || id > countProduct) {
         res.status(404).send(`Invalid request`);
       } else {
+        const startTime = Date.now();
         Product.find({ id }, (err, doc) => {
           if (err) {
             console.log('err getting product', err);
@@ -75,6 +76,7 @@ app.get('/products/:product_id', (req, res) => {
             default_price: doc[0].default_price,
             features: doc[0].features
           };
+          console.log(`Total elapsed query time: ${(Date.now() - startTime) / 1000}s`);
           res.send(resObj);
         });
       }
