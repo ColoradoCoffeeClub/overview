@@ -3,7 +3,9 @@
 const fs = require('fs');
 const faker = require('faker');
 
-const RECORDS = 10;
+const RECORDS = 1000000;
+const file = 'products.json';
+
 let STYLE_ID = 1;
 
 const createFeatures = () => {
@@ -42,19 +44,19 @@ const createPhotos = () => {
   return fakePhotos;
 };
 
-const createSkus = () => {
+const createSkus = (skuType) => {
   const getRandInt = () => {
     const MAX = 50;
     const MIN = 0;
     return Math.floor(Math.random() * (MAX - MIN + 1) + MIN);
   };
-  const pickRandIndex = Math.floor(Math.random() * 3);
+  // const pickRandIndex = Math.floor(Math.random() * 3);
   let sku = '';
-  if (pickRandIndex === 0) {
+  if (skuType === 0) {
     sku = `{
             "One Size": ${getRandInt()}
            }`;
-  } else if (pickRandIndex === 1) {
+  } else if (skuType === 1 || skuType === 2) {
     sku = `{
            "XS": ${getRandInt()},
            "S": ${getRandInt()},
@@ -85,6 +87,7 @@ const createStyle = (defaultPrice) => {
   const MAX = 6;
   const MIN = 1;
   const numOfStyles = Math.floor(Math.random() * (MAX - MIN + 1) + MIN);
+  const randomSku = Math.floor(Math.random() * 5);
   let results = '';
   for (let i = 0; i < numOfStyles; i += 1) {
     const styleName = faker.commerce.color();
@@ -92,7 +95,7 @@ const createStyle = (defaultPrice) => {
     const styleSalePrice = (i % 4 === 0) ? Math.floor(faker.commerce.price() % 10) : 0;
     const styleDefault = i === 0 ? 1 : 0;
     const stylePhotos = createPhotos();
-    const styleSkus = createSkus();
+    const styleSkus = createSkus(randomSku);
     results
       += `{
             "style_id": ${STYLE_ID},
@@ -130,11 +133,11 @@ const createProduct = (id, fakeName, fakeSlogan,
   }`;
 
   if (id === 0) {
-    fs.appendFileSync('products.json', `[${newProduct},`);
+    fs.appendFileSync(file, `[${newProduct},`);
   } else if (id === RECORDS - 1) {
-    fs.appendFileSync('products.json', `${newProduct}]`);
+    fs.appendFileSync(file, `${newProduct}]`);
   } else {
-    fs.appendFileSync('products.json', `${newProduct},`);
+    fs.appendFileSync(file, `${newProduct},`);
   }
 };
 
@@ -155,6 +158,10 @@ const getRelated = (numOfRecords) => {
 };
 
 const generateData = (records) => {
+  const tenth = RECORDS / 10;
+  let bars = '..........';
+  let loadBar;
+  const start = Date.now();
   for (let i = 0; i < records; i += 1) {
     const name = faker.commerce.productName();
     const slogan = faker.company.catchPhrase();
@@ -165,7 +172,22 @@ const generateData = (records) => {
     const results = createStyle(defaultPrice);
     const related = getRelated(RECORDS);
     createProduct(i, name, slogan, description, category, defaultPrice, features, results, related);
+    if (i % tenth === 0) {
+      const fraction = i / tenth;
+      let loadedBars = '';
+      for (let j = 0; j < fraction; j += 1) {
+        loadedBars += '=';
+      }
+      const arr = bars.split('');
+      arr.splice(0, fraction, loadedBars);
+      bars = arr.join('');
+      loadBar = `[${bars}]`;
+      process.stdout.write(`\n${loadBar} ${(i / RECORDS) * 100}%`);
+    }
   }
+  const end = Date.now();
+  process.stdout.write('\n[==========] 100%');
+  console.log(`\nTotal elapsed time: ${(end - start) / 1000}s`);
 };
 
 generateData(RECORDS);
