@@ -49,7 +49,7 @@ app.get('/products/list', (req, res) => {
             };
             products.push(respObj);
           });
-          console.log(`Total elapsed query time: ${(Date.now() - startTime) / 1000}s`);
+          console.log(`Total elapsed query time: ${(Date.now() - startTime)}ms`);
           res.send(products);
         });
     });
@@ -76,7 +76,7 @@ app.get('/products/:product_id', (req, res) => {
             default_price: doc[0].default_price,
             features: doc[0].features
           };
-          console.log(`Total elapsed query time: ${(Date.now() - startTime) / 1000}s`);
+          console.log(`Total elapsed query time: ${(Date.now() - startTime)}ms`);
           res.send(resObj);
         });
       }
@@ -118,7 +118,7 @@ app.get('/products/:product_id/styles', (req, res) => {
               results: doc[0].results
             };
           }
-          console.log(`Total elapsed query time: ${(Date.now() - startTime) / 1000}s`);
+          console.log(`Total elapsed query time: ${(Date.now() - startTime)}ms`);
           res.send(resObj);
         });
       }
@@ -138,7 +138,7 @@ app.get('/products/:product_id/related', (req, res) => {
             console.log(`Err could not get product: ${err}`);
           }
           const resArr = doc[0].related;
-          console.log(`Total elapsed query time: ${(Date.now() - startTime) / 1000}s`);
+          console.log(`Total elapsed query time: ${(Date.now() - startTime)}ms`);
           res.send(resArr);
         });
       }
