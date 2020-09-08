@@ -3,6 +3,7 @@ coverage
 public/bundle.js
 .aws
 .DS_Store
+newrelic.js
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
