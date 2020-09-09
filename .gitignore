@@ -4,6 +4,7 @@ public/bundle.js
 .aws
 .DS_Store
 newrelic.js
+newrelic_agent.log
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
