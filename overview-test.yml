@@ -1,0 +1,30 @@
+config:
+  target: "http://localhost:8080"
+  phases:
+    - duration: 60
+      arrivalRate: 1
+      name: Warm up
+    - duration: 60
+      arrivalRate: 10
+      name: Steady 10
+    - duration: 120
+      arrivalRate: 100
+      name: Heavy 100
+    - duration: 120
+      arrivalRate: 1000
+      name: Max 1000
+  payload:
+    path:  "./product_ids.csv"
+    fields:
+      - "product_id"
+scenarios:
+  - name: "Get site"
+    flow:
+      - get:
+          url: "/products/list"
+      - get:
+          url: "/products/{{ product_id }}"
+      - get:
+          url: "/products/{{ product_id }}/styles"
+      - get:
+          url: "/products/{{ product_id }}/related"
