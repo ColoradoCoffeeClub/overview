@@ -1,3 +1,4 @@
+require('newrelic');
 const express = require('express');
 
 const Product = require('./db/db.js');
@@ -5,14 +6,14 @@ const Product = require('./db/db.js');
 const app = express();
 const port = process.env.PORT || 8080;
 
-app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-//app.use('/products/:productId', express.static('public'));
+// app.use('/products/:productId', express.static('public'));
+app.use(express.static('public'));
 
 let countProduct;
 const getCount = async () => {
-  countProduct = await Product.countDocuments();
+  countProduct = await Product.estimatedDocumentCount();
   //console.log(count);
 };
 
@@ -62,6 +63,7 @@ app.get('/products/:product_id', (req, res) => {
       if (id < 1 || id > countProduct) {
         res.status(404).send(`Invalid request`);
       } else {
+
         const startTime = Date.now();
         Product.find({ id }, (err, doc) => {
           if (err) {

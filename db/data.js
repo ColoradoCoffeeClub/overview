@@ -3,13 +3,13 @@
 const fs = require('fs');
 const faker = require('faker');
 
-const RECORDS = 1000000;
+const RECORDS = 100;
 const file = 'products.json';
 
 let STYLE_ID = 1;
 
 const createFeatures = () => {
-  const MAX = 6;
+  const MAX = 3;
   const MIN = 1;
   const numOfFeatures = Math.floor(Math.random() * (MAX - MIN + 1) + MIN);
   let fakeFeatures = '';
@@ -27,8 +27,8 @@ const createFeatures = () => {
 };
 
 const createPhotos = () => {
-  const MAX = 10;
-  const MIN = 6;
+  const MAX = 4;
+  const MIN = 1;
   const numOfPhotos = Math.floor(Math.random() * (MAX - MIN + 1) + MIN);
   let fakePhotos = '';
   for (let i = 0; i < numOfPhotos; i += 1) {
@@ -46,7 +46,7 @@ const createPhotos = () => {
 
 const createSkus = (skuType) => {
   const getRandInt = () => {
-    const MAX = 50;
+    const MAX = 20;
     const MIN = 0;
     return Math.floor(Math.random() * (MAX - MIN + 1) + MIN);
   };
@@ -84,7 +84,7 @@ const createSkus = (skuType) => {
 };
 
 const createStyle = (defaultPrice) => {
-  const MAX = 6;
+  const MAX = 3;
   const MIN = 1;
   const numOfStyles = Math.floor(Math.random() * (MAX - MIN + 1) + MIN);
   const randomSku = Math.floor(Math.random() * 5);

@@ -33,6 +33,7 @@
     "fs": "0.0.1-security",
     "mongoose": "^5.10.1",
     "mui-image-slider": "^1.0.7",
+    "newrelic": "^6.13.0",
     "randomcolor": "^0.6.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
