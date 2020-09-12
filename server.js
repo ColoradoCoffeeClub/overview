@@ -1,15 +1,18 @@
 require('newrelic');
 const express = require('express');
+const cors = require('cors');
 
 const Product = require('./db/db.js');
 
 const app = express();
 const port = process.env.PORT || 8080;
+app.use(cors());
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-// app.use('/products/:productId', express.static('public'));
+
 app.use(express.static('public'));
+app.use('/:productId', express.static('public'));
 
 let countProduct;
 const getCount = async () => {
