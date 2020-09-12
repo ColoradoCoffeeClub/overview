@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/overview', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://ec2-13-58-72-68.us-east-2.compute.amazonaws.com:27017/overview', { useNewUrlParser: true, useUnifiedTopology: true });
+// mongodb://{USERNAME}:{PASSWORD}@{EC2 INSTANCE IP / HOSTNAME}/{DATABASENAME}
 
 const { Schema } = mongoose;
 
