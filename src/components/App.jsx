@@ -78,10 +78,12 @@ const App = (props) => {
 
   useEffect(() => {
     if (props.productId) {
-      productId = props.productId;
+      productId = parseInt(props.productId);
     } else {
       productId = 1;
     }
+
+    console.log('productId App', productId);
 
     Promise.all([
       axios.get(`http://52.26.193.201:3000/reviews/${productId}/meta`),
@@ -89,6 +91,9 @@ const App = (props) => {
       axios.get(`/products/${productId}/styles`)
     ])
       .then(([resReviews, resProduct, resStyles]) => {
+        console.log('resReviews.data.ratings', resReviews.data.ratings);
+        console.log('resProduct', resProduct);
+
         setRatings(resReviews.data.ratings);
         setCurrentProduct(resProduct.data);
         setStyles(resStyles.data.results);

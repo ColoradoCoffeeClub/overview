@@ -15,10 +15,10 @@ const AppContainer = () => {
       <Switch>
         <Route exact path='/' component={App} />
         <Route
-          path='/products/:productId'
+          path='/:productId'
           render={props => {
-            const { productId } = props.match.params || {productId: 1};
-            return ( <App productId={productId}/>)
+            const { productId } = props.match.params || { productId: 1 };
+            return (<App productId={productId} />)
           }} />
       </Switch>
     </StylesProvider>
