@@ -1,4 +1,8 @@
-# Products API for Overview module
+# CCC API - Product Overview Section
+
+Designed and built the back-end API for this microservice, part of a e-commerce retail store selling clothing, shoes, and accessories. 
+
+## API Routes and Respective Information
 ### List Products
 
 `GET /products/list`
