@@ -2,6 +2,12 @@
 
 Designed and built the back-end API for this microservice, part of an E-Commerce retail store selling clothing, shoes, and accessories. 
 
+## Metrics/Milestones
+
+After routes were built and the database was designed, I generated 10M primary records and seeded my Mongo database:
+![image of loading db](https://github.com/ColoradoCoffeeClub/overview/blob/master/public/Screen%20Shot%202020-09-03%20at%202.30.17%20PM.png)
+
+
 ## API Routes and Respective Information
 ### List Products
 
